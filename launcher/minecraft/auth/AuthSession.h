@@ -23,6 +23,9 @@ struct AuthSession {
     QString uuid;
     // 'msa' or 'offline', depending on account type
     QString user_type;
+
+    // If not using authlib injector, this is blank.
+    QString authlib_injector_base_url;
     // the actual launch mode for this session
     LaunchMode launchMode;
 };

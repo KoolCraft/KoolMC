@@ -291,6 +291,8 @@ bool AccountData::resumeStateFromV3(QJsonObject data)
         type = AccountType::MSA;
     } else if (typeS == "Offline") {
         type = AccountType::Offline;
+    } else if (typeS == "Yggdrasil") {
+        type = AccountType::Yggdrasil;
     } else {
         qWarning() << "Failed to parse account data: type is not recognized.";
         return false;
@@ -304,6 +306,15 @@ bool AccountData::resumeStateFromV3(QJsonObject data)
         msaToken = tokenFromJSONV3(data, "msa");
         userToken = tokenFromJSONV3(data, "utoken");
         mojangservicesToken = tokenFromJSONV3(data, "xrp-mc");
+    }
+
+    if (type == AccountType::Yggdrasil) {
+        auto serverV = data.value("yggdrasil-server");
+        if (serverV.isString()) {
+            yggdrasilServer = serverV.toString();
+        } else if (yggdrasilToken.extra.contains("server")) {
+            yggdrasilServer = yggdrasilToken.extra.value("server").toString();
+        }
     }
 
     yggdrasilToken = tokenFromJSONV3(data, "ygg");
@@ -335,6 +346,9 @@ QJsonObject AccountData::saveState() const
         tokenToJSONV3(output, mojangservicesToken, "xrp-mc");
     } else if (type == AccountType::Offline) {
         output["type"] = "Offline";
+    } else if (type == AccountType::Yggdrasil) {
+        output["type"] = "Yggdrasil";
+        output["yggdrasil-server"] = yggdrasilServer;
     }
 
     tokenToJSONV3(output, yggdrasilToken, "ygg");

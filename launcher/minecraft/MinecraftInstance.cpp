@@ -58,6 +58,7 @@
 #include "minecraft/auth/AccountList.h"
 #include "minecraft/launch/AutoInstallJava.h"
 #include "minecraft/launch/ClaimAccount.h"
+#include "minecraft/launch/ConfigureAuthlibInjector.h"
 #include "minecraft/launch/CreateGameFolders.h"
 #include "minecraft/launch/EnsureAvailableMemory.h"
 #include "minecraft/launch/EnsureOfflineLibraries.h"
@@ -594,6 +595,10 @@ QStringList MinecraftInstance::javaArguments()
     QStringList args;
 
     args << "-Duser.language=en";
+
+    if (!m_yggdrasil_javaagent->isNull() && !m_yggdrasil_javaagent->isEmpty()) {
+        args.append(QString("-javaagent:%1").arg(*m_yggdrasil_javaagent));
+    }
 
     // custom args go first. we want to override them if we have our own here.
     args.append(extraArguments());
@@ -1209,6 +1214,11 @@ LaunchTask* MinecraftInstance::createLaunchTask(AuthSessionPtr session, Minecraf
         auto step = makeShared<LaunchCommand>(pptr, getPreLaunchCommand(), tr("Pre-Launch"));
         step->setWorkingDirectory(gameRoot());
         process->appendStep(step);
+    }
+
+    *m_yggdrasil_javaagent = QString();
+    if (!session->authlib_injector_base_url.isNull() && !session->authlib_injector_base_url.isEmpty()) {
+        process->appendStep(makeShared<ConfigureAuthlibInjector>(pptr, session->authlib_injector_base_url, m_yggdrasil_javaagent));
     }
 
     // if we aren't in offline mode

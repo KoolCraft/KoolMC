@@ -87,6 +87,8 @@ class MinecraftAccount : public QObject, public Usable {
 
     static MinecraftAccountPtr createOffline(const QString& username);
 
+    static MinecraftAccountPtr createYggdrasil(const QString& server);
+
     static MinecraftAccountPtr loadFromJsonV3(const QJsonObject& json);
 
     static QUuid uuidFromUsername(QString username);
@@ -116,7 +118,16 @@ class MinecraftAccount : public QObject, public Usable {
 
     AccountType accountType() const noexcept { return data.type; }
 
-    bool ownsMinecraft() const { return data.type != AccountType::Offline && data.minecraftEntitlement.ownsMinecraft; }
+    bool ownsMinecraft() const
+    {
+        if (data.type == AccountType::Offline) {
+            return false;
+        }
+        if (data.type == AccountType::Yggdrasil) {
+            return true;
+        }
+        return data.minecraftEntitlement.ownsMinecraft;
+    }
 
     bool hasProfile() const { return data.profileId().size() != 0; }
 
@@ -128,6 +139,9 @@ class MinecraftAccount : public QObject, public Usable {
             } break;
             case AccountType::Offline: {
                 return "offline";
+            } break;
+            case AccountType::Yggdrasil: {
+                return "mojang";
             } break;
             default: {
                 return "unknown";

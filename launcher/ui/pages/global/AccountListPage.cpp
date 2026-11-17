@@ -45,10 +45,16 @@
 #include <QDebug>
 
 #include "ui/dialogs/ChooseOfflineNameDialog.h"
+#include "ui/dialogs/LoginDialog.h"
+
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QEventLoop>
 #include "ui/dialogs/CustomMessageBox.h"
 #include "ui/dialogs/MSALoginDialog.h"
 
 #include "Application.h"
+#include "tasks/Task.h"
 
 AccountListPage::AccountListPage(QWidget* parent) : QMainWindow(parent), ui(new Ui::AccountListPage)
 {
@@ -140,14 +146,6 @@ void AccountListPage::on_actionAddMicrosoft_triggered()
 
 void AccountListPage::on_actionAddOffline_triggered()
 {
-    if (!m_accounts->anyAccountIsValid()) {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("You must add a Microsoft account that owns Minecraft before you can add an offline account."
-                                "<br><br>"
-                                "If you have lost your account you can contact Microsoft for support."));
-        return;
-    }
-
     ChooseOfflineNameDialog dialog(tr("Please enter your desired username to add your offline account."), this);
     if (dialog.exec() != QDialog::Accepted) {
         return;
@@ -155,6 +153,20 @@ void AccountListPage::on_actionAddOffline_triggered()
 
     if (const MinecraftAccountPtr account = MinecraftAccount::createOffline(dialog.getUsername())) {
         account->login()->start();  // The task will complete here.
+        m_accounts->addAccount(account);
+        if (m_accounts->count() == 1) {
+            m_accounts->setDefaultAccount(account);
+        }
+    }
+}
+
+void AccountListPage::on_actionAddYggdrasil_triggered()
+{
+    MinecraftAccountPtr account = LoginDialog::newAccount(
+        this, tr("Please enter the Yggdrasil server URL, and enter your account username and password to add your account."),
+        AccountType::Yggdrasil);
+
+    if (account) {
         m_accounts->addAccount(account);
         if (m_accounts->count() == 1) {
             m_accounts->setDefaultAccount(account);
