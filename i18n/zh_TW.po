@@ -1,0 +1,128 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_TW\n"
+
+msgctxt "AuthlibInjectorStep"
+msgid "Fetching authlib injector API URL"
+msgstr "正在取得 authlib-injector API 位址"
+
+msgctxt "AuthlibInjectorStep"
+msgid "Invalid authlib injector API URL"
+msgstr "無效的 authlib-injector API 位址"
+
+msgctxt "AuthlibInjectorStep"
+msgid "Fetched authlib injector API URL"
+msgstr "已取得 authlib-injector API 位址"
+
+msgctxt "AuthlibInjectorStep"
+msgid "Authlib injector API URL not found, defaulting to the supplied base URL"
+msgstr "找不到 authlib-injector API 位址，將使用提供的伺服器位址"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Refreshing Yggdrasil session"
+msgstr "正在重新整理 Yggdrasil 工作階段"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Logging in to Yggdrasil server"
+msgstr "正在登入 Yggdrasil 伺服器"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Yggdrasil server URL is empty."
+msgstr "Yggdrasil 伺服器位址為空。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Failed to authenticate with Yggdrasil server: %1"
+msgstr "Yggdrasil 伺服器驗證失敗：%1"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Failed to parse authentication server response JSON response: %1 at offset %2."
+msgstr "解析驗證伺服器傳回的 JSON 回應失敗：%1，位移量 %2。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "An unknown Yggdrasil error occurred."
+msgstr "發生未知的 Yggdrasil 錯誤。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Authentication server didn't send a client token."
+msgstr "驗證伺服器未傳回 client token。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Authentication server attempted to change the client token. This isn't supported."
+msgstr "驗證伺服器嘗試變更 client token，不支援此操作。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Authentication server didn't send an access token."
+msgstr "驗證伺服器未傳回 access token。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Authentication server didn't send a selected profile."
+msgstr "驗證伺服器未傳回選取的角色資料。"
+
+msgctxt "YggdrasilAuthStep"
+msgid "Authenticated with Yggdrasil server"
+msgstr "已透過 Yggdrasil 伺服器驗證"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "Fetching the Minecraft profile."
+msgstr "正在取得 Minecraft 角色資料。"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "A UUID is required to get the profile."
+msgstr "取得角色資料需要 UUID。"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "Account has no Minecraft profile."
+msgstr "此帳號沒有 Minecraft 角色資料。"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "Minecraft Java profile acquisition failed: %1"
+msgstr "取得 Minecraft Java 角色資料失敗：%1"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "Minecraft Java profile response could not be parsed"
+msgstr "無法解析 Minecraft Java 角色資料回應"
+
+msgctxt "MinecraftProfileStepMojang"
+msgid "Minecraft Java profile acquisition succeeded."
+msgstr "已成功取得 Minecraft Java 角色資料。"
+
+msgctxt "LoginDialog"
+msgid "Add Yggdrasil Account"
+msgstr "新增 Yggdrasil 帳號"
+
+msgctxt "LoginDialog"
+msgid "Yggdrasil server URL (e.g. https://example.com)"
+msgstr "Yggdrasil 伺服器位址（例如 https://example.com）"
+
+msgctxt "LoginDialog"
+msgid "Username"
+msgstr "使用者名稱"
+
+msgctxt "LoginDialog"
+msgid "Password"
+msgstr "密碼"
+
+msgctxt "LoginDialog"
+msgid "Message label placeholder."
+msgstr "訊息標籤預留位置。"
+
+msgctxt "AccountListPage"
+msgid "Add &Yggdrasil"
+msgstr "新增Yggdrasil帳戶(&Y)"
+
+msgctxt "AccountListPage"
+msgid "Please enter the Yggdrasil server URL, and enter your account username and password to add your account."
+msgstr "請輸入 Yggdrasil 伺服器位址，並輸入帳號使用者名稱和密碼以新增帳號。"
+
+msgctxt "AccountList|Account type"
+msgid "Yggdrasil"
+msgstr "Yggdrasil"
+
+msgctxt "LoginDialog"
+msgid "OK"
+msgstr "確認"
+
+msgctxt "LoginDialog"
+msgid "Cancel"
+msgstr "取消"

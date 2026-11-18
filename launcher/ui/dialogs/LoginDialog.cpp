@@ -14,6 +14,14 @@ LoginDialog::LoginDialog(QWidget* parent, AccountType type) : QDialog(parent), u
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    // Keep OK/Cancel consistent with the other account actions: no mnemonics/shortcuts.
+    if (auto* okButton = ui->buttonBox->button(QDialogButtonBox::Ok)) {
+        okButton->setText(tr("OK"));
+    }
+    if (auto* cancelButton = ui->buttonBox->button(QDialogButtonBox::Cancel)) {
+        cancelButton->setText(tr("Cancel"));
+    }
 }
 
 LoginDialog::~LoginDialog()

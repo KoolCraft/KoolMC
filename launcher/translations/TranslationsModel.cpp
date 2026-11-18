@@ -164,6 +164,7 @@ struct TranslationsModel::Private {
     QString m_selectedLanguage = g_defaultLangCode;
     std::unique_ptr<QTranslator> m_qtTranslator;
     std::unique_ptr<QTranslator> m_appTranslator;
+    std::unique_ptr<QTranslator> m_privateTranslator;
 
     Net::Request* m_indexTask = nullptr;
     QString m_downloadingTranslation;
@@ -459,6 +460,10 @@ bool TranslationsModel::selectLanguage(QString key) const
         QCoreApplication::removeTranslator(d->m_appTranslator.get());
         d->m_appTranslator.reset();
     }
+    if (d->m_privateTranslator) {
+        QCoreApplication::removeTranslator(d->m_privateTranslator.get());
+        d->m_privateTranslator.reset();
+    }
     if (d->m_qtTranslator) {
         QCoreApplication::removeTranslator(d->m_qtTranslator.get());
         d->m_qtTranslator.reset();
@@ -472,58 +477,70 @@ bool TranslationsModel::selectLanguage(QString key) const
     const bool useSystemLocale = APPLICATION->settings()->get("UseSystemLocale").toBool();
     QLocale::setDefault(useSystemLocale ? QLocale::system() : QLocale(langCode));
 
-    // if it's the default UI language, finish
-    if (langCode == g_defaultLangCode) {
-        d->m_selectedLanguage = langCode;
-        return true;
+    bool successful = langCode == g_defaultLangCode;
+
+    if (langCode != g_defaultLangCode) {
+        // install official translations
+        // FIXME: this is likely never present. FIX IT.
+        d->m_qtTranslator = std::make_unique<QTranslator>();
+        if (d->m_qtTranslator->load("qt_" + langCode, QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
+            qDebug() << "Loading Qt Language File for" << langCode.toLocal8Bit().constData() << "...";
+            if (!QCoreApplication::installTranslator(d->m_qtTranslator.get())) {
+                qCritical() << "Loading Qt Language File failed.";
+                d->m_qtTranslator.reset();
+            } else {
+                successful = true;
+            }
+        } else {
+            d->m_qtTranslator.reset();
+        }
+
+        if (langPtr->localFileType == FileType::Po) {
+            qDebug() << "Loading Application Language File for" << langCode.toLocal8Bit().constData() << "...";
+            d->m_appTranslator = std::make_unique<POTranslator>(FS::PathCombine(d->m_dir.path(), langCode + ".po"));
+            if (!d->m_appTranslator->isEmpty()) {
+                if (!QCoreApplication::installTranslator(d->m_appTranslator.get())) {
+                    qCritical() << "Installing Application Language File failed.";
+                    d->m_appTranslator.reset();
+                } else {
+                    successful = true;
+                }
+            } else {
+                qCritical() << "Loading Application Language File failed.";
+                d->m_appTranslator.reset();
+            }
+        } else if (langPtr->localFileType == FileType::Qm) {
+            d->m_appTranslator = std::make_unique<QTranslator>();
+            if (d->m_appTranslator->load("mmc_" + langCode, d->m_dir.path())) {
+                qDebug() << "Loading Application Language File for" << langCode.toLocal8Bit().constData() << "...";
+                if (!QCoreApplication::installTranslator(d->m_appTranslator.get())) {
+                    qCritical() << "Installing Application Language File failed.";
+                    d->m_appTranslator.reset();
+                } else {
+                    successful = true;
+                }
+            } else {
+                d->m_appTranslator.reset();
+            }
+        } else {
+            d->m_appTranslator.reset();
+        }
     }
 
-    // otherwise install new translations
-    bool successful = false;
-    // FIXME: this is likely never present. FIX IT.
-    d->m_qtTranslator = std::make_unique<QTranslator>();
-    if (d->m_qtTranslator->load("qt_" + langCode, QLibraryInfo::path(QLibraryInfo::TranslationsPath))) {
-        qDebug() << "Loading Qt Language File for" << langCode.toLocal8Bit().constData() << "...";
-        if (!QCoreApplication::installTranslator(d->m_qtTranslator.get())) {
-            qCritical() << "Loading Qt Language File failed.";
-            d->m_qtTranslator.reset();
+    // install private translations last so they take precedence over the official ones
+    d->m_privateTranslator = std::make_unique<POTranslator>(QString(":/i18n/%1.po").arg(langCode));
+    if (!d->m_privateTranslator->isEmpty()) {
+        qDebug() << "Loading private Application Language File for" << langCode.toLocal8Bit().constData() << "...";
+        if (!QCoreApplication::installTranslator(d->m_privateTranslator.get())) {
+            qCritical() << "Installing private Application Language File failed.";
+            d->m_privateTranslator.reset();
         } else {
             successful = true;
         }
     } else {
-        d->m_qtTranslator.reset();
+        d->m_privateTranslator.reset();
     }
 
-    if (langPtr->localFileType == FileType::Po) {
-        qDebug() << "Loading Application Language File for" << langCode.toLocal8Bit().constData() << "...";
-        d->m_appTranslator = std::make_unique<POTranslator>(FS::PathCombine(d->m_dir.path(), langCode + ".po"));
-        if (!d->m_appTranslator->isEmpty()) {
-            if (!QCoreApplication::installTranslator(d->m_appTranslator.get())) {
-                qCritical() << "Installing Application Language File failed.";
-                d->m_appTranslator.reset();
-            } else {
-                successful = true;
-            }
-        } else {
-            qCritical() << "Loading Application Language File failed.";
-            d->m_appTranslator.reset();
-        }
-    } else if (langPtr->localFileType == FileType::Qm) {
-        d->m_appTranslator = std::make_unique<QTranslator>();
-        if (d->m_appTranslator->load("mmc_" + langCode, d->m_dir.path())) {
-            qDebug() << "Loading Application Language File for" << langCode.toLocal8Bit().constData() << "...";
-            if (!QCoreApplication::installTranslator(d->m_appTranslator.get())) {
-                qCritical() << "Installing Application Language File failed.";
-                d->m_appTranslator.reset();
-            } else {
-                successful = true;
-            }
-        } else {
-            d->m_appTranslator.reset();
-        }
-    } else {
-        d->m_appTranslator.reset();
-    }
     d->m_selectedLanguage = langCode;
     return successful;
 }

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>zh.po</file>
+        <file>zh_TW.po</file>
+    </qresource>
+</RCC>
